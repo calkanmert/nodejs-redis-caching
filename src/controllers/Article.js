@@ -2,7 +2,17 @@ const redisClient = require('../redis');
 const Article = require('../models/Article');
 
 async function index(req, res) {
-  res.render('index');
+  await redisClient.connect();
+  const cachedArticles = await redisClient.get('articles'); let
+    articles;
+  if (cachedArticles) {
+    articles = JSON.parse(cachedArticles);
+  } else {
+    articles = await Article.find();
+    await redisClient.set('articles', JSON.stringify(articles));
+  }
+  await redisClient.disconnect();
+  res.render('index', { articles });
 }
 
 async function newArticle(req, res) {
