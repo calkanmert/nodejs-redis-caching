@@ -1,0 +1,11 @@
+extends layout.pug
+
+block content
+  div(class="row mt-5 justify-content-md-center")
+    div(class="col-md-6")
+        a(href="/" class="btn btn-danger") Back 
+        div(class="bg-white p-3 border border-top-0 mt-2")
+          div(class="mb-3")
+            h4(class="text-center my-3")=article.title 
+            p=article.content
+            

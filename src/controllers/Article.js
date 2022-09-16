@@ -34,7 +34,28 @@ async function newArticle(req, res) {
   res.redirect('back');
 }
 
+async function getArticle(req, res) {
+  await redisClient.connect();
+  const cachedArticle = await redisClient.get(`articles:${req.params.id}`); let
+    article;
+  if (cachedArticle) {
+    article = JSON.parse(cachedArticle);
+  } else {
+    article = await Article.find({ _id: req.params.id });
+    console.log(article);
+    if (article.length < 1) {
+      console.log('calisti');
+      await redisClient.disconnect();
+      return res.redirect('/');
+    }
+    await redisClient.set(`articles:${req.params.id}`, JSON.stringify(article));
+  }
+  redisClient.disconnect();
+  return res.render('article', { article });
+}
+
 module.exports = {
   index,
   newArticle,
+  getArticle,
 };
